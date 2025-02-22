@@ -15,7 +15,7 @@ export default function Index() {
           <Ionicons name="menu" size={30} color="green" />
         </TouchableOpacity>
         <Text style={tw`text-green-500 text-lg font-bold`}>
-          Zapitolivingstone App Canchas
+          App Canchas
         </Text>
         {/* Eliminamos el View vacío y usamos null */}
         <View style={{ width: 30 }} />

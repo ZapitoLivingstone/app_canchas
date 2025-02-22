@@ -3,25 +3,29 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import tw from "tailwind-react-native-classnames";
 import { useRouter } from "expo-router";
 import { supabase } from "../../utils/supabase";
-import { NavigationProp } from "@react-navigation/native";
 
-export default function Registro({ navigation }: { navigation: NavigationProp<any> }) {
+export default function Registro() {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
-  const [telefono, setTelefono] = useState("+569"); // Prefijo inicial
+  const [telefono, setTelefono] = useState("+569");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [cargando, setCargando] = useState(false);
   const router = useRouter();
 
   const handleRegister = async () => {
-    if (!nombre || !email || !password || telefono.length !== 12) {
+    if (!nombre || !email || !password || !confirmPassword || telefono.length !== 12) {
       Alert.alert("Error", "Todos los campos son obligatorios y el teléfono debe tener el formato +569XXXXXXXX.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Las contraseñas no coinciden.");
       return;
     }
 
     setCargando(true);
 
-    // Registrar usuario en Supabase Auth
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -33,14 +37,13 @@ export default function Registro({ navigation }: { navigation: NavigationProp<an
       return;
     }
 
-    // Guardar información adicional en la tabla `usuarios`
     const { error: insertError } = await supabase.from("usuarios").insert([
       {
         id: data.user?.id,
         nombre,
         email,
         telefono,
-        rol: "user",
+        rol: "user", 
       },
     ]);
 
@@ -59,6 +62,7 @@ export default function Registro({ navigation }: { navigation: NavigationProp<an
     <View style={tw`flex-1 justify-center items-center bg-black px-6`}>
       <Text style={tw`text-green-500 text-3xl font-bold mb-6`}>Registro</Text>
 
+      {/* Campo de Nombre */}
       <TextInput
         placeholder="Nombre"
         value={nombre}
@@ -67,6 +71,7 @@ export default function Registro({ navigation }: { navigation: NavigationProp<an
         placeholderTextColor="#00FF00"
       />
 
+      {/* Campo de Email */}
       <TextInput
         placeholder="Email"
         value={email}
@@ -76,6 +81,7 @@ export default function Registro({ navigation }: { navigation: NavigationProp<an
         keyboardType="email-address"
       />
 
+      {/* Campo de Teléfono */}
       <TextInput
         placeholder="Teléfono"
         value={telefono}
@@ -89,6 +95,7 @@ export default function Registro({ navigation }: { navigation: NavigationProp<an
         keyboardType="phone-pad"
       />
 
+      {/* Campo de Contraseña */}
       <TextInput
         placeholder="Contraseña"
         value={password}
@@ -98,6 +105,17 @@ export default function Registro({ navigation }: { navigation: NavigationProp<an
         placeholderTextColor="#00FF00"
       />
 
+      {/* Campo de Confirmar Contraseña */}
+      <TextInput
+        placeholder="Confirmar Contraseña"
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+        secureTextEntry
+        style={tw`w-full p-3 border border-green-500 rounded-lg text-white mt-4`}
+        placeholderTextColor="#00FF00"
+      />
+
+      {/* Botón de Registro */}
       <TouchableOpacity
         onPress={handleRegister}
         disabled={cargando}
@@ -108,6 +126,7 @@ export default function Registro({ navigation }: { navigation: NavigationProp<an
         </Text>
       </TouchableOpacity>
 
+      {/* Enlace para Iniciar Sesión */}
       <TouchableOpacity onPress={() => router.push("./InicioSesion")} style={tw`mt-4`}>
         <Text style={tw`text-green-500 text-lg`}>¿Ya tienes cuenta? Inicia sesión</Text>
       </TouchableOpacity>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import tw from "tailwind-react-native-classnames";
+import { useRouter } from "expo-router";
 import { supabase } from "../../utils/supabase";
 
 import { NavigationProp } from "@react-navigation/native";
@@ -9,6 +10,7 @@ export default function InicioSesion({ navigation }: { navigation: NavigationPro
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [cargando, setCargando] = useState(false);
+  const router = useRouter();
 
   const handleLogin = async () => {
     setCargando(true);
@@ -18,7 +20,7 @@ export default function InicioSesion({ navigation }: { navigation: NavigationPro
       Alert.alert("Error", error.message);
     } else {
       Alert.alert("Éxito", "Inicio de sesión exitoso");
-      navigation.navigate("/"); 
+      router.push("/");
     }
     setCargando(false);
   };
@@ -55,7 +57,7 @@ export default function InicioSesion({ navigation }: { navigation: NavigationPro
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate("./Registro")} style={tw`mt-4`}>
+      <TouchableOpacity onPress={() => router.push("./Registro")} style={tw`mt-4`}>
         <Text style={tw`text-green-500 text-lg`}>¿No tienes cuenta? Regístrate</Text>
       </TouchableOpacity>
     </View>
